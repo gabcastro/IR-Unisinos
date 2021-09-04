@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using InformationRetrieval.Pipelining;
 
 namespace InformationRetrieval.Runtime.RankManager
@@ -9,7 +10,9 @@ namespace InformationRetrieval.Runtime.RankManager
 
     class RankRequest
     {
-
+        public List<string> PackFilesPath { get; set; }
+        public List<string> QueryString { get; set; }
+        public List<List<string>> OrganizedPdfsContent { get; set; }
     }
 
     class RankResponse

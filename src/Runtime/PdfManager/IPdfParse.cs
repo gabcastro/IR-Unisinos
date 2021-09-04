@@ -12,14 +12,14 @@ namespace InformationRetrieval.Runtime.PdfManager
     {
         public string PdfPath { get; set; }
         public string QueryString { get; set; }
-        public Dictionary<string, int> KeyWords { get; set; }
+        public List<string> KeyWords { get; set; }
     }
 
     class PdfParseResponse
     {
-        public string PdfName { get; set; }
-        public string QueryString { get; set; }
-        public string WordsCount { get; set; }
+        public List<string> PackFilesPath { get; set; }
+        public List<string> QueryString { get; set; }
+        public List<List<string>> OrganizedPdfsContent { get; set; }
     }
 
 }

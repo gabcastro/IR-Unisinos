@@ -45,7 +45,7 @@ namespace InformationRetrieval
             Generate(pdfsPath, queryString, CheckQueryString(queryString));
         }
 
-        private void Generate(string pdfsPath, string queryString, Dictionary<string, int> keyWords)
+        private void Generate(string pdfsPath, string queryString, List<string> keyWords)
         {
             _logger.LogInformation("Pipeline setup...");
 
@@ -79,7 +79,9 @@ namespace InformationRetrieval
         {
             return new RankRequest
             {
-                
+                PackFilesPath = input.PackFilesPath,
+                QueryString = input.QueryString,
+                OrganizedPdfsContent = input.OrganizedPdfsContent
             };
         }
 
@@ -99,33 +101,31 @@ namespace InformationRetrieval
         /// Check if query consist of an operation AND or spaces
         /// in case that there are two different operations, an exception is throwing     
         /// </summary>
-        private Dictionary<string, int> CheckQueryString(string queryString)
+        private List<string> CheckQueryString(string queryString)
         {
-            var keyWords = new Dictionary<string, int>();
+            var keyWords = new List<string>();
 
             if (Regex.IsMatch(queryString, @"\bAND\b") || queryString.Contains(" "))
                 keyWords = SplitQuery(queryString);
             else 
-                keyWords.Add(queryString, 0);
+                keyWords.Add(queryString);
             
             return keyWords;
         }
 
         /// <summary>
-        /// This method will return a tuple with:
-        ///     a dictionary that represent each word to find 
-        ///     an integer that represent what operation is
+        /// This method will return a list with each word of query string
         /// </summary>
-        private Dictionary<string, int> SplitQuery(string queryString)
+        private List<string> SplitQuery(string queryString)
         {
-            var keyValues = new Dictionary<string, int>();
+            var keyValues = new List<string>();
 
             if (Regex.IsMatch(queryString, @"\bAND\b"))
             {
                 foreach (var i in queryString.Split("AND"))
                 {
                     if (!i.Trim().Any(Char.IsUpper))
-                        keyValues.Add(i.Trim(), 0);
+                        keyValues.Add(i.Trim());
                     else
                         throw new Exception("Strings must to be entire lower case");
                 }
@@ -135,7 +135,7 @@ namespace InformationRetrieval
                 foreach(var i in queryString.Split(new char[0])) // whitespace
                 {
                     if (!i.Trim().Any(Char.IsUpper))
-                        keyValues.Add(i.Trim(), 0);
+                        keyValues.Add(i.Trim());
                     else 
                         throw new Exception("Strings must to be entire lower case");
                 }

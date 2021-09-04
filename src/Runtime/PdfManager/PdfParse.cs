@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace InformationRetrieval.Runtime.PdfManager
 {
@@ -15,13 +16,11 @@ namespace InformationRetrieval.Runtime.PdfManager
     {
         private readonly ILogger<PdfParse> _logger;
         private readonly IConfigurationRoot _config;
-        private Dictionary<string, int> KeyWords;
         
         public PdfParse(IConfigurationRoot config, ILoggerFactory loggerFactory)
         {
             _config = config;
             _logger = loggerFactory.CreateLogger<PdfParse>();
-            KeyWords = new Dictionary<string, int>();
         }
 
         public dynamic Execute(dynamic inputData)
@@ -33,21 +32,23 @@ namespace InformationRetrieval.Runtime.PdfManager
         {
             try
             {
-                KeyWords = request.KeyWords;
-                List<string> packFiles = new List<string>();
+                var packFiles = new List<string>();
+                var organizedPdfContent = new List<List<string>>();
+                var lisQueryString = CleanQueryString(request.KeyWords);
 
                 foreach (string file in Directory.GetFiles(request.PdfPath, "*.pdf"))
                     packFiles.Add(file);
 
-                CountOccurrencesWords(packFiles[0]);
-                // CheckOperation(request.Operation);
-
-                var lisNamePdf = request.PdfPath.Split(@"\");
-
+                // TODO: uncomment this foreach to read all documents
+                // foreach(var i in packFiles)
+                //     organizedPdfContent.Add(CleanContent(i));
+                
+                organizedPdfContent.Add(CleanContent(packFiles[0]));
+                
                 return new PdfParseResponse {
-                    PdfName = "", //lisNamePdf[^1],
-                    QueryString = request.QueryString,
-                    WordsCount = ""//ToString(KeyWords)
+                    PackFilesPath = packFiles,
+                    QueryString = lisQueryString,
+                    OrganizedPdfsContent = organizedPdfContent
                 };   
             }
             catch (Exception e)
@@ -61,11 +62,11 @@ namespace InformationRetrieval.Runtime.PdfManager
         /// Responsability:
         ///     Read pdf file
         ///     Remove accents from all words
-        ///     Compare with query string and count frequency of each word
+        ///     Return a list with entire phrase 
         /// </summary>
-        private void CountOccurrencesWords(string pathPdf)
+        private List<string> CleanContent(string pathPdf)
         {
-            var tempDict = new Dictionary<string, int>();
+            var tempList = new List<string>();
 
             var pdfDocument = new PdfDocument(new PdfReader(filename: pathPdf));
             var strategy = new LocationTextExtractionStrategy();
@@ -79,72 +80,18 @@ namespace InformationRetrieval.Runtime.PdfManager
                 foreach(string line in lines)
                 {
                     if (CheckContentLine(line))
-                        foreach (var k in KeyWords)
-                        {
-                            string lowerCaseTextString = RemoveDiacritics(line.ToLower());
-                            string lowerCaseWord = RemoveDiacritics(k.Key.ToLower());
-
-                            int index = 0;
-                            int diffLineWord = lowerCaseTextString.Length - lowerCaseWord.Length;
-
-                            while (diffLineWord >= index && index != -1)
-                            {
-                                index = lowerCaseTextString.IndexOf(lowerCaseWord, index);
-                                if (index != -1) 
-                                {
-                                    if (tempDict.ContainsKey(k.Key))
-                                        tempDict[k.Key] += 1;
-                                    else 
-                                        tempDict.Add(k.Key, 1);
-                                    index = lowerCaseWord.Length + index;
-                                }
-                            }
-                        }
-                }
-            }
-
-            foreach (var i in tempDict)
-                KeyWords[i.Key] = i.Value;
-        }
-
-        /// <summary>
-        /// If is an operation of AND, than will be set to zero all elements
-        /// </summary>
-        private void CheckOperation(int op)
-        {
-            var tempDict = new Dictionary<string, int>();
-
-            if (op == 1) 
-            {
-                bool setZeroAll = false;
-
-                foreach (var i in KeyWords)
-                {
-                    if (i.Value == 0)
                     {
-                        setZeroAll = true;
-                        break;
+                        string lowerCaseTextString = RemoveDiacritics(line.ToLower());
+                        tempList.AddRange (
+                            from l in lowerCaseTextString.Split(new char[] {' ', '(', ')', ',', '.'}) 
+                            where l.Length > 0
+                            select l.Trim()
+                        );
                     }
                 }
-
-                if (setZeroAll) 
-                {
-                    foreach (var i in KeyWords) 
-                        tempDict.Add(i.Key, 0);
-            
-                    KeyWords = tempDict;
-                }
             }
-        }
 
-        private string ToString(Dictionary<string, int> occurrencesWords)
-        {
-            string strOccurrences = "";
-
-            foreach(var i in occurrencesWords)
-                strOccurrences = strOccurrences + i.Key + "(" + i.Value + "), ";
-
-            return strOccurrences[0..^2];
+            return tempList.Distinct().ToList();
         }
 
         /// <summary>
@@ -183,6 +130,16 @@ namespace InformationRetrieval.Runtime.PdfManager
                 string f when f.Contains((char)32) && f.Length == 1 => false, // new line
                 _ => true,
             };
+        }
+
+        private List<string> CleanQueryString(List<string> lQueryString)
+        {
+            var tempList = new List<string>();
+
+            foreach(var i in lQueryString)
+                tempList.Add(RemoveDiacritics(i));
+
+            return tempList;
         }
     }
 }
