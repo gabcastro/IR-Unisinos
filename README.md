@@ -1,4 +1,4 @@
-# IR-Unisinos# Search in documents by Strings
+# Information Retrieval
 
 # Contributors
 |<img src="https://avatars.githubusercontent.com/u/15840469?v=4" width=150px height=150px><br> [Gabriel Castro](https://github.com/gabcastro) | <img src="https://avatars.githubusercontent.com/u/22084856?v=4" width=150px height=150px><br> [Paulo Backes](https://github.com/JrBackes)| <img src="https://avatars1.githubusercontent.com/u/43481916?s=400&u=2683d479631afcd710a45ec6cae3e82ba1a846bf&v=4" width=150px height=150px><br> [Vitor Matter](https://github.com/vmatter) |
