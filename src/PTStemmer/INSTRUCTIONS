@@ -1,3 +1,0 @@
-This instructions will run a small example (using Mono):
-gmcs Example.cs -reference:PTStemmer_v2.dll
-mono Example.exe 
