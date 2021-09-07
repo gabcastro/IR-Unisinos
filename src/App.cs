@@ -32,7 +32,7 @@ namespace InformationRetrieval
         {
             _logger.LogInformation("Type dataset path (pdf files)");
             // string pdfsPath = Console.ReadLine();
-            string pdfsPath = @"D:\Downloads\coisas pessoais\unisinos\desenvolvimento de app para mineracao de texto em c#\Projeto Final - Dataset";
+            string pdfsPath = @"E:\vitor_desktop\iCybersec\C#\Projeto Final - Dataset";
 
             if (!Directory.Exists(path: pdfsPath))
                 throw new Exception("Invalid path, dir not found!");
@@ -65,7 +65,7 @@ namespace InformationRetrieval
 
             p.PipelineExecuting += PipelineExecutingLog;
 
-            using (p) 
+            using (p)
             {
                 // first request
                 var request = new PdfParseRequest
@@ -76,7 +76,7 @@ namespace InformationRetrieval
                 };
 
                 p.Execute(request);
-            }    
+            }
         }
 
         #region Convert executions
@@ -105,8 +105,7 @@ namespace InformationRetrieval
             return new SaveQueryRankRequest
             {
                 QueryString = input.QueryString,
-                PackFilePath = input.PackFilePath,
-                Similarity = input.Similarity
+                ListRankRetrieval = input.ListRankRetrieval
             };
         }
 
@@ -115,11 +114,10 @@ namespace InformationRetrieval
             return new VizInfoRetrievalRequest
             {
                 QueryString = input.QueryString,
-                PackFilePath = input.PackFilePath,
-                Similarity = input.Similarity
+                ListRankRetrieval = input.ListRankRetrieval
             };
         }
-             
+
         #endregion
 
         #region Handling
@@ -134,9 +132,9 @@ namespace InformationRetrieval
 
             if (Regex.IsMatch(queryString, @"\bAND\b") || queryString.Contains(" "))
                 keyWords = SplitQuery(queryString);
-            else 
+            else
                 keyWords.Add(queryString);
-            
+
             return keyWords;
         }
 
@@ -159,20 +157,20 @@ namespace InformationRetrieval
             }
             else
             {
-                foreach(var i in queryString.Split(new char[0])) // whitespace
+                foreach (var i in queryString.Split(new char[0])) // whitespace
                 {
                     if (!i.Trim().Any(Char.IsUpper))
                         keyValues.Add(i.Trim());
-                    else 
+                    else
                         throw new Exception("Strings must to be entire lower case");
                 }
-            } 
+            }
 
             return keyValues;
         }
 
         #endregion
-        
+
         protected void PipelineExecutingLog(IFilter filter)
         {
             var msg = $"Step: {filter.GetType().Name}";
