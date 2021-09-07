@@ -15,11 +15,9 @@ namespace InformationRetrieval.Runtime.PdfManager
     internal class PdfParse : IPdfParse
     {
         private readonly ILogger<PdfParse> _logger;
-        private readonly IConfigurationRoot _config;
         
-        public PdfParse(IConfigurationRoot config, ILoggerFactory loggerFactory)
+        public PdfParse(ILoggerFactory loggerFactory)
         {
-            _config = config;
             _logger = loggerFactory.CreateLogger<PdfParse>();
         }
 
@@ -44,6 +42,7 @@ namespace InformationRetrieval.Runtime.PdfManager
                 //     organizedPdfContent.Add(CleanContent(i));
                 
                 organizedPdfContent.Add(CleanContent(packFiles[0]));
+                organizedPdfContent.Add(CleanContent(packFiles[1]));
                 
                 return new PdfParseResponse {
                     PackFilesPath = packFiles,

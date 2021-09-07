@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using InformationRetrieval.Runtime.PdfManager;
 using InformationRetrieval.Runtime.RankManager;
 using InformationRetrieval.Runtime.VectorToCSV;
+using InformationRetrieval.Runtime.Database;
+using InformationRetrieval.Runtime.VizInformation;
 
 namespace InformationRetrieval
 {
@@ -37,7 +39,7 @@ namespace InformationRetrieval
 
             _logger.LogInformation("Type a query string");
             // string queryString = Console.ReadLine();
-            string queryString = "tal AND txal";
+            string queryString = "manhã AND brasil AND natação AND australiano AND inferiores AND ultrapassar";
 
             if (string.IsNullOrEmpty(queryString))
                 throw new Exception("Query string empty");
@@ -49,12 +51,16 @@ namespace InformationRetrieval
         {
             _logger.LogInformation("Pipeline setup...");
 
-            var p = new Pipeline<PdfParseRequest, PdfParseResponse>()
-                .Add(new PdfParse(_config, _loggerFactory))
+            var p = new Pipeline<PdfParseRequest, VizInfoRetrievalResponse>()
+                .Add(new PdfParse(_loggerFactory))
                 .Add<PdfParseResponse, RankRequest>(Convert)
                 .Add(new Rank(_config, _loggerFactory))
-                .Add<RankResponse, CSVParseRequest>(Convert)
-                .Add(new CSVParse(_config, _loggerFactory))
+                .Add<RankResponse, CSVExportRequest>(Convert)
+                .Add(new CSVExport(_loggerFactory))
+                .Add<CSVExportRespose, SaveQueryRankRequest>(Convert)
+                .Add(new SaveQueryRank(_config, _loggerFactory))
+                .Add<SaveQueryRankResponse, VizInfoRetrievalRequest>(Convert)
+                .Add(new VizInfoRetrieval(_loggerFactory))
             ;
 
             p.PipelineExecuting += PipelineExecutingLog;
@@ -85,11 +91,32 @@ namespace InformationRetrieval
             };
         }
 
-        private CSVParseRequest Convert(RankResponse input)
+        private CSVExportRequest Convert(RankResponse input)
         {
-            return new CSVParseRequest
+            return new CSVExportRequest
             {
+                QueryString = input.QueryString,
+                ListRankRetrieval = input.ListRankRetrieval
+            };
+        }
 
+        private SaveQueryRankRequest Convert(CSVExportRespose input)
+        {
+            return new SaveQueryRankRequest
+            {
+                QueryString = input.QueryString,
+                PackFilePath = input.PackFilePath,
+                Similarity = input.Similarity
+            };
+        }
+
+        private VizInfoRetrievalRequest Convert(SaveQueryRankResponse input)
+        {
+            return new VizInfoRetrievalRequest
+            {
+                QueryString = input.QueryString,
+                PackFilePath = input.PackFilePath,
+                Similarity = input.Similarity
             };
         }
              

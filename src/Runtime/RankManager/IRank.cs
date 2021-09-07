@@ -17,6 +17,15 @@ namespace InformationRetrieval.Runtime.RankManager
 
     class RankResponse
     {
-        
+        public string QueryString { get; set; }
+        public List<RankRetrieval> ListRankRetrieval { get; set; }
+    }
+
+    class RankRetrieval
+    {
+        public string DocName { get; set; }
+        public List<string> Tokens { get; set; }
+        public int Similarity { get; set; }
+        public int Ranking { get; set; }
     }
 }
