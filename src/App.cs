@@ -32,7 +32,7 @@ namespace InformationRetrieval
         {
             _logger.LogInformation("Type dataset path (pdf files)");
             // string pdfsPath = Console.ReadLine();
-            string pdfsPath = @"D:\Downloads\coisas pessoais\unisinos\desenvolvimento de app para mineracao de texto em c#\Projeto Final - Dataset";
+            string pdfsPath = @"E:\vitor_desktop\iCybersec\C#\Projeto Final - Dataset";
 
             if (!Directory.Exists(path: pdfsPath))
                 throw new Exception("Invalid path, dir not found!");

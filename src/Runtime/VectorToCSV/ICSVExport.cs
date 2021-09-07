@@ -18,7 +18,6 @@ namespace InformationRetrieval.Runtime.VectorToCSV
     class CSVExportRespose
     {
         public string QueryString { get; set; }
-        public List<string> PackFilePath { get; set; }
-        public List<int> Similarity { get; set; }
+        public List<RankRetrieval> ListRankRetrieval { get; set; }
     }
 }
