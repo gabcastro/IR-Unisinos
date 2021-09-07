@@ -13,7 +13,7 @@ namespace InformationRetrieval.Runtime.Database
         {
             _config = config;
             _logger = loggerFactory.CreateLogger<SaveQueryRank>();
-            // _databaseUtils = new DatabaseUtils(_config["DatabasePath"], _config["DatabaseName"]);
+            _databaseUtils = new DatabaseUtils(_config["DatabasePath"], _config["DatabaseName"]);
         }
 
         public dynamic Execute(dynamic inputData)
@@ -23,7 +23,12 @@ namespace InformationRetrieval.Runtime.Database
 
         public SaveQueryRankResponse Generate(SaveQueryRankRequest request)
         {
-            return new SaveQueryRankResponse {};
+            _databaseUtils.InsertInDatabase(request.QueryString, request.ListRankRetrieval);
+
+            return new SaveQueryRankResponse {
+                QueryString = request.QueryString,
+                ListRankRetrieval = request.ListRankRetrieval
+            };
         } 
     }
 }

@@ -31,15 +31,15 @@ namespace InformationRetrieval
         public async Task Execute()
         {
             _logger.LogInformation("Type dataset path (pdf files)");
-            // string pdfsPath = Console.ReadLine();
-            string pdfsPath = @"E:\vitor_desktop\iCybersec\C#\Projeto Final - Dataset";
+            string pdfsPath = Console.ReadLine();
+            // string pdfsPath = @"D:\Downloads\coisas pessoais\unisinos\desenvolvimento de app para mineracao de texto em c#\Projeto Final - Dataset";
 
             if (!Directory.Exists(path: pdfsPath))
                 throw new Exception("Invalid path, dir not found!");
 
             _logger.LogInformation("Type a query string");
-            // string queryString = Console.ReadLine();
-            string queryString = "manhã AND brasil AND natação AND australiano AND inferiores AND ultrapassar";
+            string queryString = Console.ReadLine();
+            // string queryString = "manhã AND brasil AND natação AND australiano AND inferiores AND ultrapassar";
 
             if (string.IsNullOrEmpty(queryString))
                 throw new Exception("Query string empty");

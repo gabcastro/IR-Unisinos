@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Logging;
+using System;
+using System.Text;
 
 namespace InformationRetrieval.Runtime.VizInformation
 {
@@ -13,12 +15,25 @@ namespace InformationRetrieval.Runtime.VizInformation
         
         public dynamic Execute(dynamic inputData)
         {
-            throw new System.NotImplementedException();
+            return Generator(inputData);
         }
 
         public VizInfoRetrievalResponse Generator(VizInfoRetrievalRequest request)
         {
-            throw new System.NotImplementedException();
+            StringBuilder strBuffer = new StringBuilder();
+
+            strBuffer.AppendLine("╔═══════════════════════╦═══════════════════════╦═══════════════╦══┈┈┈┈┈┈┈┈┈┈⇝");
+            strBuffer.AppendLine("║ Doc.\t\t\t║\tSimilarity\t║\tRank\t║ QueryString");
+            strBuffer.AppendLine("╠═══════════════════════╬═══════════════════════╬═══════════════╬══┈┈┈┈┈┈┈┈┈┈⇝");
+            
+            foreach (var i in request.ListRankRetrieval)
+                strBuffer.AppendLine("║ " + i.DocName.Substring(0, i.DocName.Length < 20 ? i.DocName.Length : 20) + "...\t" + "║\t\t" + i.Similarity + "\t║\t" + i.Ranking + "\t║ " + request.QueryString);
+
+            strBuffer.AppendLine("╚═══════════════════════╩═══════════════════════╩═══════════════╩══┈┈┈┈┈┈┈┈┈┈⇝");
+            
+            Console.WriteLine(strBuffer.ToString());
+
+            return new VizInfoRetrievalResponse { IsOk = true };
         }
     }
 }

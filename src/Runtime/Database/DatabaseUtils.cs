@@ -1,5 +1,8 @@
 using System.Data.SQLite;
 using System.Collections.Generic;
+using System.IO;
+using InformationRetrieval.Runtime.RankManager;
+using System;
 
 namespace InformationRetrieval.Runtime.Database
 {
@@ -9,13 +12,17 @@ namespace InformationRetrieval.Runtime.Database
 
         public DatabaseUtils(string path, string name)
         {
-            ConnectDatabase(path);
-            CreateDatabase(name);
+            var fullPath = string.Concat(path, name);
+            CreateDatabase(fullPath);
+            ConnectDatabase(fullPath);
+            CreateTable();
         }
 
-        public static void ConnectDatabase(string path)
+        public static void ConnectDatabase(string fullPath)
         {
-            sqliteConnection = new SQLiteConnection(path);
+            var dir = Directory.GetCurrentDirectory();
+            dir = string.Concat("Data Source= ", dir, "\\", fullPath, ";");
+            sqliteConnection = new SQLiteConnection(dir);
             sqliteConnection.Open();
         }
 
@@ -26,32 +33,45 @@ namespace InformationRetrieval.Runtime.Database
 
         public static void CreateTable()
         {
-            using (var cmd = sqliteConnection.CreateCommand())
-            {
-                // TODO: COLOQUEI O NOME DTIME POR CAUSA DO TIPO.
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS DATAFILE(ID INTEGER NOT NULL, SEARCHSTRING VARCHAR NOT NULL, RANKING INTEGER,  SIMILARITY INTEGER NOT NULL, DTIME DATETIME NOT NULL, PRIMARY KEY(ID AUTOINCREMENT)";
-                cmd.ExecuteNonQuery();
-            }
+            using var cmd = sqliteConnection.CreateCommand();
+            cmd.CommandText = @"
+                    CREATE TABLE IF NOT EXISTS IR_HISTORY (
+                        ID INTEGER NOT NULL, 
+                        QUERYSTRING VARCHAR(255) NOT NULL, 
+                        DOCNAME VARCHAR(255) NOT NULL,
+                        SIMILARITY INTEGER NOT NULL, 
+                        RANKING INTEGER NOT NULL,
+                        DTIME DATETIME NOT NULL, 
+                        PRIMARY KEY(ID AUTOINCREMENT)
+                    )";
+            cmd.ExecuteNonQuery();
         }
 
-        // TODO: Change name of table row. This table row will be orderedabstract by ranking. Group by searchString + ranking.
-        public static void InsertInDatabase(List<List<string>> tableRow)
-        {
-            foreach (var item in tableRow)
+        public void InsertInDatabase(string queryString, List<RankRetrieval> rr)
+        { 
+            foreach (var item in rr)
             {
-            }
-            
+                using var cmd = sqliteConnection.CreateCommand();
+                cmd.CommandText = @"INSERT INTO IR_HISTORY (
+                    QUERYSTRING, 
+                    DOCNAME,
+                    SIMILARITY, 
+                    RANKING,
+                    DTIME
+                ) VALUES (
+                    @QUERYSTRING, 
+                    @DOCNAME,
+                    @SIMILARITY, 
+                    @RANKING,
+                    @DTIME
+                )";
 
-            using (var cmd = sqliteConnection.CreateCommand())
-            {
-                cmd.CommandText = "INSERT INTO DATAFILE(SIMILARITY, SEARCHSTRING, DTIME) VALUES (@SIMILARITY, @SEARCHSTRING, @DTIME)";
-
-                //TODO: VERIFY PARAMETERS TO DO THE INSERT
-                // cmd.Parameters.Add(new SQLiteParameter("@SEARCHSTRING",));
-                // cmd.Parameters.Add(new SQLiteParameter("@SIMILARITY",));
-                // cmd.Parameters.Add(new SQLiteParameter("@DTIME",));
+                cmd.Parameters.Add(new SQLiteParameter("@QUERYSTRING", queryString));
+                cmd.Parameters.Add(new SQLiteParameter("@DOCNAME", item.DocName));
+                cmd.Parameters.Add(new SQLiteParameter("@SIMILARITY", item.Similarity));
+                cmd.Parameters.Add(new SQLiteParameter("@RANKING", item.Ranking));
+                cmd.Parameters.Add(new SQLiteParameter("DTIME", DateTime.Now.ToString()));
                 cmd.ExecuteNonQuery();
-            
             }
         }
     }
