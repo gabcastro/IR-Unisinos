@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using InformationRetrieval.Pipelining;
+using InformationRetrieval.Runtime.RankManager;
 
 namespace InformationRetrieval.Runtime.Database
 {
@@ -11,17 +12,12 @@ namespace InformationRetrieval.Runtime.Database
     class SaveQueryRankRequest
     {
         public string QueryString { get; set; }
-        public List<string> PackFilePath { get; set; }
-        public List<List<string>> VectorSpace { get; set; }
-        public List<int> Similarity { get; set; }
-        public List<int> Rank { get; set; }
+        public List<RankRetrieval> ListRankRetrieval { get; set; }
     }
 
     class SaveQueryRankResponse
     {
         public string QueryString { get; set; }
-        public List<string> PackFilePath { get; set; }
-        public List<int> Similarity { get; set; }
-        public List<int> Rank { get; set;}
+        public List<RankRetrieval> ListRankRetrieval { get; set; }
     }
 }
