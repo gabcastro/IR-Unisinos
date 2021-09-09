@@ -5,20 +5,16 @@
 |---|---|--|
 
 # Application data
-The project's premise is to use a search String informed by the user, to find the words in a file in PDF format.
+The project's premise is implement a search engine application with the objective of do a ranking of documents according to their similarity with a string informed by the user.
 
-# Business rules
-- The words that are located in the text will be informed in lowercase.
-- In the case of multiple words, the logical operator between them must be informed. The accepted logical operators will be **AND** and **OR**.
-- Operators must be written in capital letters, while the words consulted in small letters.
-
-The application should return the following results, based on the query performed.
-- If OR operator is used, the application must return the number of occurrences of each of the queried words.
-- If AND operator is used, the application must return if the two words were found in the text, together with the number of occurrences of each one of them.
-It is important to note that the words may appear in the document in more than one format. For example, the word aplicação can also appear as Aplicação, APLICAÇÃO, aplicacao, etc. 
-
-
-# Next steps
-
- - TODO: Implement stemming logic
-
+# Business rules - 
+- The application must read all PDF documents located in the location informed by the user and create the vector space model (Vector Space).
+- All the words located in the text will be informed in lowercase.
+- The application should return the following results, based on the query performed.
+- The project consists of implementing a search engine application with the objective of producing a ranking of documents according to their similarity with a string informed by the user.
+- All words entered must be used as a basis for creating the ranking, that is, the application must consider the use of the AND operator. Important: the operator does not need to be informed and the words that make up the string can only be separated by spaces.
+- The creation of the vector space must consider the removal of stop words and the reduction of each term to its stem (stemming).
+- In order to facilitate the creation of the ranking, the inclusion of the vocabulary of each document in the vector space must consider the number of occurrences of each term.
+- The application must contain an option to save the vector space in file in CSV format.
+- The application must store each query in the SQLite database. The data stored are: date, time, search string, ranking of documents and similarity value of each document.
+- The application should display the ranking of documents on screen, along with the similarity with the search string. If two or more documents have the same similarity score, they can be presented in any order (considering only the position of documents with the same score!).
