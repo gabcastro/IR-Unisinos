@@ -7,7 +7,7 @@
 # Application data
 The project's premise is implement a search engine application with the objective of do a ranking of documents according to their similarity with a string informed by the user.
 
-# Business rules - 
+# Business rules
 - The application must read all PDF documents located in the location informed by the user and create the vector space model (Vector Space).
 - All the words located in the text will be informed in lowercase.
 - The application should return the following results, based on the query performed.
