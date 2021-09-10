@@ -24,8 +24,9 @@ namespace InformationRetrieval.Runtime.VectorToCSV
 
         public CSVExportRespose Generate(CSVExportRequest request)
         {
+            _logger.LogInformation("Export to CSV...");
 
-            SaveCSV(request.QueryString, request.ListRankRetrieval);
+            SaveCSV(request.ListRankRetrieval);
 
             return new CSVExportRespose
             {
@@ -34,19 +35,15 @@ namespace InformationRetrieval.Runtime.VectorToCSV
             };
         }
 
-        private void SaveCSV(string queryString, List<RankRetrieval> listRankRetrieval)
+        private void SaveCSV(List<RankRetrieval> listRankRetrieval)
         {
-            using (var writer = new StreamWriter("result.csv", false, Encoding.UTF8))
+            using var writer = new StreamWriter("result.csv", false, Encoding.UTF8);
+            using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            foreach (var list in listRankRetrieval)
             {
-                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-                {
-                    foreach (var list in listRankRetrieval)
-                    {
-                        var row = string.Concat(list.DocName + ", ", string.Join(", ", list.Tokens));
-                        csv.WriteComment(row);
-                        csv.NextRecord();
-                    }
-                }
+                var row = string.Concat(list.DocName + ", ", string.Join(", ", list.Tokens));
+                csv.WriteComment(row);
+                csv.NextRecord();
             }
         }
     }

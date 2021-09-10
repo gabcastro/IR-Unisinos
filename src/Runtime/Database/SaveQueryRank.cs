@@ -23,6 +23,8 @@ namespace InformationRetrieval.Runtime.Database
 
         public SaveQueryRankResponse Generate(SaveQueryRankRequest request)
         {
+            _logger.LogInformation("Saving rank to db...");
+
             _databaseUtils.InsertInDatabase(request.QueryString, request.ListRankRetrieval);
 
             return new SaveQueryRankResponse {

@@ -28,6 +28,8 @@ namespace InformationRetrieval.Runtime.PdfManager
 
         public PdfParseResponse Generate(PdfParseRequest request)
         {
+            _logger.LogInformation("Running PdfParse...");
+            
             try
             {
                 var packFiles = new List<string>();
@@ -37,13 +39,9 @@ namespace InformationRetrieval.Runtime.PdfManager
                 foreach (string file in Directory.GetFiles(request.PdfPath, "*.pdf"))
                     packFiles.Add(file);
 
-                // TODO: uncomment this foreach to read all documents
-                // foreach(var i in packFiles)
-                //     organizedPdfContent.Add(CleanContent(i));
-                
-                organizedPdfContent.Add(CleanContent(packFiles[0]));
-                organizedPdfContent.Add(CleanContent(packFiles[1]));
-                
+                foreach(var i in packFiles)
+                    organizedPdfContent.Add(CleanContent(i));
+                                
                 return new PdfParseResponse {
                     PackFilesPath = packFiles,
                     QueryString = lisQueryString,

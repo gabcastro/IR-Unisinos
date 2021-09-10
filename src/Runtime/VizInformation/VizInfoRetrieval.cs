@@ -22,14 +22,15 @@ namespace InformationRetrieval.Runtime.VizInformation
         {
             StringBuilder strBuffer = new StringBuilder();
 
-            strBuffer.AppendLine("╔═══════════════════════╦═══════════════════════╦═══════════════╦══┈┈┈┈┈┈┈┈┈┈⇝");
-            strBuffer.AppendLine("║ Doc.\t\t\t║\tSimilarity\t║\tRank\t║ QueryString");
-            strBuffer.AppendLine("╠═══════════════════════╬═══════════════════════╬═══════════════╬══┈┈┈┈┈┈┈┈┈┈⇝");
+            strBuffer.AppendLine("\n══> Query string: " + request.QueryString + " <══\n");
+            strBuffer.AppendLine("╔═══════════════════════╦═══════════════════════╦═══════════════╗");
+            strBuffer.AppendLine("║ Doc.\t\t\t║\tSimilarity\t║\tRank\t║");
+            strBuffer.AppendLine("╠═══════════════════════╬═══════════════════════╬═══════════════╬");
             
             foreach (var i in request.ListRankRetrieval)
-                strBuffer.AppendLine("║ " + i.DocName.Substring(0, i.DocName.Length < 20 ? i.DocName.Length : 20) + "...\t" + "║\t\t" + i.Similarity + "\t║\t" + i.Ranking + "\t║ " + request.QueryString);
+                strBuffer.AppendLine("║ " + i.DocName.Substring(0, i.DocName.Length < 20 ? i.DocName.Length : 20) + "...\t" + "║\t\t" + i.Similarity + "\t║\t" + i.Ranking + "\t║");
 
-            strBuffer.AppendLine("╚═══════════════════════╩═══════════════════════╩═══════════════╩══┈┈┈┈┈┈┈┈┈┈⇝");
+            strBuffer.AppendLine("╚═══════════════════════╩═══════════════════════╩═══════════════╝");
             
             Console.WriteLine(strBuffer.ToString());
 
